@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Demo</title>
+	<script src="scripts/require.js"></script>
+</head>
+
+<body>
+	<canvas id="game" width="256" height="18" style="border:1px solid #000000;">
+		Your browser does not support the canvas element.
+	</canvas>
+
+	<script>
+		require.config({
+			baseUrl: "scripts"
+		});
+		
+		require(['globals','spritesheet','player','tile'],
+		function () {
+
+	var PlayerSheet = new spritesheet("hero.png");
+		// standing animation
+		PlayerSheet.append(0,0,16,16);
+		PlayerSheet.append(16,0,16,16);
+		PlayerSheet.append(32,0,16,16);
+		// walking right
+		PlayerSheet.append(0,16,16,16);
+		PlayerSheet.append(16,16,16,16);
+		PlayerSheet.append(32,16,16,16);
+		//walking  left
+		PlayerSheet.append(0,32,16,16);
+		PlayerSheet.append(16,32,16,16);
+		PlayerSheet.append(32,32,16,16);
+		var TileSheet = new spritesheet("tiles.png");
+		TileSheet.append(0,0,16,18);
+		TileSheet.append(16,0,16,18);
+		
+		var Hero = new player(16,64,0,"stand");
+		// standing state
+		Hero.add_state("stand",0,3);
+		// walking right state
+		Hero.add_state("right",3,3);
+		// walking left state
+		Hero.add_state("left",6,3);
+		
+		// build world
+		var arr = [ 0,1,1,0,1,0,0,1,1,0,1,0,0,0,1,0 ];
+		var world = new tile_plane(16,1,16,arr);
+		function keydownevent( e )
+		{
+			player_update(e, Hero);
+		}
+		
+		function render()
+		{
+		  world.render_plane(TileSheet);
+		  Hero.render(PlayerSheet);
+
+		  Hero.ismoving = 0;
+		  Hero.type = "stand";
+		}
+		window.addEventListener('keydown',keydownevent,false);
+			//run game
+			(function GameLoop(){
+			  render();
+			  setTimeout(GameLoop, 150);
+			})();
+		});
+	</script>
+</body>
+
+</html>
